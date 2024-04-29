@@ -4,7 +4,7 @@ import { Button, Card, Placeholder } from "react-bootstrap";
 class MovieCard extends Component {
   state = {
     movieObj: null,
-    isLoading: true
+    isLoading: true // usiamo lo stato di caricamento anche per determinare la renderizzazione condizionale del nostro elemento
   };
 
   fetchMovieData = async () => {
@@ -27,14 +27,28 @@ class MovieCard extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
+    // intercetta qualsiasi aggiornamento del componente (fase di UPDATE)
+    // quindi ad ogni cambio di state o props ricevute
+
+    // prevProps e prevState sono i due parametri propri di componentDidUpdate
+    // sono ciò che lo differenzia da un comune render()
+
+    // nel nostro caso vogliamo che this.fetchMovieData() venga invocato quando viene scelto un nuovo titolo in App.jsx
+    // quindi quando il nostro componente MovieCard riceve nuove props corrispondenti a this.state.movieTitle di App
+
     console.log("componentDidUpdate()");
     console.log("PREV PROPS", prevProps.movieTitle);
     console.log("THIS PROPS", this.props.movieTitle);
+    // quello che non vogliamo succeda è di invocare this.fetchMovies() più di una volta
 
+    // creare una condizione di guardia è OBBLIGATORIO quando si usa componentDidUpdate
+    // la condizione è necessaria ad evitare loop infiniti di aggiornamento causati dal setState che fa aggiornare il componente ugualmente.
     if (prevProps.movieTitle !== this.props.movieTitle) {
       console.log("movieTitle DID UPDATE, new fetch!");
-      this.fetchMovieData();
+      this.fetchMovieData(); // fetchMoviesData avverrà SOLO quando viene cambiato il titolo dalla select, che ci porta ad avere una nuova prop movieTitle
     } else {
+      // se siamo qui è probabilmente per via di un setState avviato dentro this.fetchMoviesData che scatena un nuovo update,
+      // ma rispetto a prima le props non saranno diverse questa volta e quindi abbiamo lo STOP.
       console.log("no new props! STOP");
     }
   }
@@ -45,6 +59,7 @@ class MovieCard extends Component {
   }
 
   render() {
+    // this.fetchMovies() // non posso chiamare fetchMovies dentro render === LOOP INFINITO
     console.log("render()");
     return (
       <>
