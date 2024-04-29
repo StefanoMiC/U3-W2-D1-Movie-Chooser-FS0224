@@ -63,6 +63,8 @@ class MovieCard extends Component {
     console.log("render()");
     return (
       <>
+        {/* con lo stato di caricamento si determina la visualizzazione dell'elemento segnaposto, durante l'attesa,
+       o la card vera e propria */}
         {this.state.isLoading ? (
           <Card>
             <Placeholder animation="glow">
@@ -81,6 +83,12 @@ class MovieCard extends Component {
           </Card>
         ) : (
           <Card>
+            {/*
+             Il punto di domanda è una precauzione nel caso in cui il caricamento non ci fosse più
+             ma avessimo un errore che impedisce l'arrivo del dato in movieObj.
+             
+             Per evitare errori usiamo l'"optional chaining operator" che permette di verificare 
+            l'esistenza di movieObj prima di tentare l'accesso a proprietà dentro di esso */}
             <Card.Img variant="top" src={this.state.movieObj?.Poster} />
             <Card.Body>
               <Card.Title>{this.state.movieObj?.Title}</Card.Title>
